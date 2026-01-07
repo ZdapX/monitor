@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const axios = require('axios');
 
 export default async function handler(req, res) {
-    const URL_TARGET = "https://google.com"; // Ganti dengan website yang dipantau
+    const URL_TARGET = "https://cekprojek.vercel.app"; // Ganti dengan website yang dipantau
     
     const transporter = nodemailer.createTransport({
         service: 'gmail',
