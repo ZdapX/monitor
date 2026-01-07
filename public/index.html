@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Dashboard</title>
+    <style>
+        :root { --green: #22c55e; --red: #ef4444; --bg: #f8fafc; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; padding-top: 50px; }
+        .container { width: 100%; max-width: 500px; padding: 20px; }
+        h1 { font-size: 22px; margin-bottom: 20px; color: #1e293b; text-align: center; }
+        
+        .status-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); text-align: center; }
+        .indicator { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+        
+        .up { background-color: var(--green); }
+        .down { background-color: var(--red); }
+        
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 30px; text-align: left; }
+        .info-item { background: #f1f5f9; padding: 15px; border-radius: 12px; }
+        .info-item label { display: block; font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold; }
+        .info-item span { font-size: 14px; color: #1e293b; font-weight: 600; }
+
+        button { margin-top: 20px; width: 100%; padding: 12px; border: none; border-radius: 10px; background: #e2e8f0; cursor: pointer; font-weight: 600; }
+        button:hover { background: #cbd5e1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>System Monitor</h1>
+        <div class="status-card">
+            <div id="indicator" class="indicator up">...</div>
+            <h2 id="status-text" style="margin: 0; color: #1e293b;">Checking...</h2>
+            <p id="url-text" style="color: #94a3b8; font-size: 14px; margin: 10px 0 0;"></p>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Response Time</label>
+                    <span id="latency">-</span>
+                </div>
+                <div class="info-item">
+                    <label>Last Check</label>
+                    <span id="last-check">-</span>
+                </div>
+            </div>
+            <button onclick="checkStatus()">Refresh Status</button>
+        </div>
+    </div>
+
+    <script>
+        async function checkStatus() {
+            const ind = document.getElementById('indicator');
+            const statusTxt = document.getElementById('status-text');
+            const latencyTxt = document.getElementById('latency');
+            const checkTxt = document.getElementById('last-check');
+            const urlTxt = document.getElementById('url-text');
+
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+
+                urlTxt.innerText = data.url;
+                latencyTxt.innerText = data.latency;
+                checkTxt.innerText = data.last_check;
+                
+                if(data.status === "UP") {
+                    ind.className = "indicator up";
+                    ind.innerText = "ONLINE";
+                    statusTxt.innerText = "System Operational";
+                    statusTxt.style.color = "#22c55e";
+                } else {
+                    ind.className = "indicator down";
+                    ind.innerText = "OFFLINE";
+                    statusTxt.innerText = "System Outage";
+                    statusTxt.style.color = "#ef4444";
+                }
+            } catch (e) {
+                statusTxt.innerText = "Error checking status";
+            }
+        }
+
+        // Auto check saat load
+        checkStatus();
+        // Auto refresh tiap 30 detik di dashboard
+        setInterval(checkStatus, 30000);
+    </script>
+</body>
+</html>
