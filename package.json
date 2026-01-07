@@ -1,0 +1,8 @@
+{
+  "name": "uptime-monitor",
+  "version": "1.0.0",
+  "dependencies": {
+    "nodemailer": "^6.9.0",
+    "axios": "^1.6.0"
+  }
+}
